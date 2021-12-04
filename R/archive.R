@@ -46,7 +46,8 @@ month_archive <- googlesheets4::read_sheet(link, sheet_tm, col_types = "cccccccc
 cache_archive <- googlesheets4::read_sheet(link, sheet_archive, col_types = "cccTTdc")
 
 archive <- cache_archive |>
-  dplyr::rows_upsert(month_archive, by = c("Team member", "Period"))
+  dplyr::rows_upsert(month_archive, by = c("Team member", "Period")) |>
+  dplyr::arrange(.data$`Team member`, .data$`Start Period`)
 
 ### write to table ----
 googlesheets4::write_sheet(
