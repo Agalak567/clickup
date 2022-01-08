@@ -105,7 +105,7 @@ name_val_custom <- name_custom |>
     "custom_fields_name",
     "options_orderindex"
   )) |>
-  dplyr::mutate(value_text = ifelse(grepl("^[0-9]+$", value_text),
+  dplyr::mutate(value_text = ifelse(grepl("^[0-9]$", value_text),
     value_fields, value_text
   )) |>
   dplyr::select(-.data$options_orderindex, .data$value_fields) |>
