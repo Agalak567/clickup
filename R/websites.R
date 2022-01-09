@@ -105,15 +105,16 @@ name_val_custom <- name_custom |>
     "custom_fields_name",
     "options_orderindex"
   )) |>
-  dplyr::mutate(value_text = ifelse(grepl("^[0-9]$", value_text),
-    value_fields, value_text
+  dplyr::mutate(value_text = ifelse(!is.na(.data$value_fields),
+    .data$value_fields,
+    .data$value_text
   )) |>
   dplyr::select(-.data$options_orderindex, .data$value_fields) |>
   dplyr::group_by(
     .data$id,
     .data$custom_fields_name
   ) |>
-  dplyr::mutate(value = paste(value_text, collapse = ", ")) |>
+  dplyr::mutate(value = paste(.data$value_text, collapse = ", ")) |>
   dplyr::distinct(
     .data$id,
     .data$custom_fields_name,
