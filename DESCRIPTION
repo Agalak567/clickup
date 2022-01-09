@@ -9,7 +9,6 @@ Authors@R:
 Description: Works with Сlickup API.
 Depends: R (>= 4.1)
 Imports:
-  magrittr (>= 2.0.1),
   dplyr (>= 1.0.4),
   purrr (>= 0.3.4),
   lubridate (>= 1.7.9),
@@ -21,7 +20,8 @@ Imports:
   glue (>= 1.4.2),
   prettyunits (>= 1.1.1),
   fuzzyjoin (>= 0.1.6),
-  BiocManager (>= 1.30.12)
+  BiocManager (>= 1.30.12),
+  jsonlite (>= 1.7.2)
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

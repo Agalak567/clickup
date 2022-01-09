@@ -45,10 +45,10 @@ tasks_all <- purrr::map_df(pages, function(x) get_tasks(x, space_id, delay)) |>
 
 ### get custom_fields ----
 custom_fields <- tasks_all |>
-  dplyr::select(id, custom_fields) |>
-  tidyr::unnest_longer(custom_fields) |>
-  tidyr::unnest_wider(custom_fields, names_sep = "_") |>
-  tidyr::hoist(custom_fields_type_config, options = "options")
+  dplyr::select(.data$id, .data$custom_fields) |>
+  tidyr::unnest_longer(.data$custom_fields) |>
+  tidyr::unnest_wider(.data$custom_fields, names_sep = "_") |>
+  tidyr::hoist(.data$custom_fields_type_config, options = "options")
 
 # get name
 name_custom <- custom_fields |>
@@ -73,11 +73,11 @@ options_custom <- custom_fields |>
   tidyr::unnest_longer(.data$options) |>
   tidyr::unnest_wider(.data$options, names_sep = "_") |>
   dplyr::mutate(
-    options_label = ifelse(is.na(options_label), "", as.character(options_label)),
-    options_name = ifelse(is.na(options_name), "", as.character(options_name))
+    options_label = ifelse(is.na(.data$options_label), "", as.character(.data$options_label)),
+    options_name = ifelse(is.na(.data$options_name), "", as.character(.data$options_name))
   ) |>
-  dplyr::mutate(value_fields = paste(options_label, options_name, sep = " ")) |>
-  dplyr::mutate(value_fields = stringr::str_trim(value_fields)) |>
+  dplyr::mutate(value_fields = paste(.data$options_label, .data$options_name, sep = " ")) |>
+  dplyr::mutate(value_fields = stringr::str_trim(.data$value_fields)) |>
   dplyr::select(
     .data$id,
     .data$custom_fields_name,
@@ -85,7 +85,7 @@ options_custom <- custom_fields |>
     .data$value_fields,
     .data$options_orderindex
   ) |>
-  dplyr::mutate(options_orderindex = as.character(options_orderindex))
+  dplyr::mutate(options_orderindex = as.character(.data$options_orderindex))
 
 ### join name and options ----
 name_val_custom <- name_custom |>
@@ -94,9 +94,9 @@ name_val_custom <- name_custom |>
     "custom_fields_name",
     "options_id"
   )) |>
-  dplyr::mutate(value_text = ifelse(is.na(value_fields),
-    options_id,
-    value_fields
+  dplyr::mutate(value_text = ifelse(is.na(.data$value_fields),
+    .data$options_id,
+    .data$value_fields
   )) |>
   dplyr::select(-c(.data$options_orderindex, .data$value_fields)) |>
   dplyr::rename(options_orderindex = .data$options_id) |>
@@ -157,7 +157,7 @@ to_sheet <- tasks_desc |>
   dplyr::arrange(.data$parent_id, .data$parent_num) |>
   dplyr::select(-c(.data$parent_id, .data$parent_num)) |>
   dplyr::left_join(parent_name, by = "parent") |>
-  dplyr::mutate(parent = ifelse(!is.na(parent), parent_name, parent)) |>
+  dplyr::mutate(parent = ifelse(!is.na(.data$parent), .data$parent_name, .data$parent)) |>
   dplyr::select(-.data$parent_name) |>
   dplyr::relocate(.data$parent, .after = .data$name) |>
   dplyr::rename(
