@@ -1,3 +1,4 @@
+### const ----
 auth_google <- Sys.getenv("GKEY")
 name_google <- Sys.getenv("GNAME")
 link <- Sys.getenv("GLINK")
