@@ -1,15 +1,17 @@
 ### const ----
-auth_clickup <- Sys.getenv("CLICKUP")
+credentals <- jsonlite::fromJSON(Sys.getenv("credentals"))
+auth_clickup <- credentals[["CLICKUP"]]
 auth_google <- Sys.getenv("GKEY")
-name_google <- Sys.getenv("GNAME")
-list_id <- Sys.getenv("WEBLIST")
-link <- Sys.getenv("GLINK_ACCOUNT")
-sheet_websites <- Sys.getenv("GWEBSITES")
+name_google <- credentals[["GNAME"]]
+list_id <- credentals[["WEBLIST"]]
+link <- credentals[["GLINK_ACCOUNT"]]
+sheet_websites <- credentals[["GWEBSITES"]]
 delay <- 0.6
 pages <- 0:100
 time_local <- "Europe/Moscow"
 
 ### get list and number of tasks ----
+# bug with length of list, block doesn't work
 list <- httr::GET(
   glue::glue("https://api.clickup.com/api/v2/list/{list_id}"),
   httr::add_headers(Authorization = auth_clickup)
