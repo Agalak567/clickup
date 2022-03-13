@@ -14,6 +14,7 @@ miliseconds <- 1000
 time_local <- "Europe/Moscow"
 delay <- 0.6
 err_num_cols <- 2
+err_desc <- "can't get list, folder, space"
 
 ### get team members id ----
 teams <- httr::GET(
@@ -37,7 +38,7 @@ members_id <- unique(teams_ds$members_user_id) |>
 now_posix <- lubridate::now(tzone = time_local)
 
 ### before 3 months
-start_posix <- now_posix - lubridate::weeks(5)
+start_posix <- now_posix - lubridate::weeks(10)
 
 ### get unix time
 to_posix <- \(x){
@@ -104,8 +105,19 @@ get_tasks <- function(task_id, .delay, .num_cols) {
   )
   task_json <- list(task = list(httr::content(task, "parsed")))
 
-  task_ds <- tibble::tibble(result = task_json[["task"]]) |>
-    tidyr::unnest_wider(col = .data[["result"]])
+  task_ds <- tryCatch(
+    {
+      tibble::tibble(result = task_json[["task"]]) |>
+        tidyr::unnest_wider(col = .data[["result"]])
+    },
+    error = function(e) {
+      data.frame(
+        id = task_id,
+        err = err_desc
+      )
+    }
+  )
+
   ### wrong result has ncol two
   if (ncol(task_ds) == .num_cols) {
     task_ds <- task_ds |> dplyr::mutate(id = task_id)
