@@ -39,6 +39,18 @@ get_comments <- \(num) {
     rvest::html_elements(".c-comment")
 
   get_comment_items <- \(comment) {
+    author <- comment |>
+      rvest::html_element(".c-comment__author-name") |>
+      rvest::html_text()
+
+    details <- comment |>
+      rvest::html_elements(".c-comment__author-details")
+
+    date_detail <- details[2]
+
+    date <- date_detail |>
+      rvest::html_text()
+
     text <- comment |>
       rvest::html_element(".c-comment__description") |>
       rvest::html_text()
@@ -52,6 +64,8 @@ get_comments <- \(num) {
     result <- tibble::tibble(
       Site = site,
       Link = link,
+      Author = author,
+      Date = date,
       Text = text,
       Rating = rating,
     )
@@ -70,11 +84,17 @@ num_links <- seq_len(nrow(links_parse))
 dt_load_now <- as.character(lubridate::now(tzone = time_local))
 all_comments <- purrr::map_df(num_links, \(x) get_comments(x)) |>
   dplyr::mutate(Rating = (.data$Rating / 100) * 5) |>
+  dplyr::mutate(
+    Text = stringr::str_trim(.data$Text, side = "both"),
+    Author = stringr::str_trim(.data$Author, side = "both")
+  ) |>
+  dplyr::mutate(Author = gsub(",$", "", .data$Author)) |>
   dplyr::mutate(dt_load = dt_load_now) |>
-  dplyr::mutate(Text = stringr::str_trim(.data$Text, side = "both"))
+  dplyr::mutate(Date = format(lubridate::mdy(.data$Date), "%Y-%m-%d")) |>
+  dplyr::mutate(Date = lubridate::as_date(.data$Date))
 
 ### get cache comments ----
-cache_comments <- googlesheets4::read_sheet(link, comments_parse, col_types = "cccdcc") |>
+cache_comments <- googlesheets4::read_sheet(link, comments_parse, col_types = "cccDcdcc") |>
   dplyr::select(-.data$Status)
 
 ### update comments ----
