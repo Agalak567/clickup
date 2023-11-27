@@ -79,7 +79,8 @@ time_ds <- dplyr::tibble(result = time_json[["data"]]) |>
   dplyr::mutate(
     start = as.character(.data$start),
     end = as.character(.data$end),
-    diff_hours = .data$duration / (3600 * 1000)  # Convert duration from milliseconds to hours
+    duration_numeric = as.numeric(.data$duration),
+    diff_hours = ifelse(is.na(duration_numeric), 0, duration_numeric / (3600 * 1000))
   ) |>
   dplyr::mutate(
     `Team member` = stringr::str_remove(.data$user_username, "(?<=[A-Z])[a-z]+")
