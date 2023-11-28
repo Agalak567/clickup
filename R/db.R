@@ -81,9 +81,9 @@ time_ds <- dplyr::tibble(result = time_json[["data"]]) |>
     end = as.character(.data$end)
   ) |>
   dplyr::mutate(
-    diff_hours = as.numeric(difftime(.data$end, .data$start, units = "hours")),
-    # duration_numeric = as.numeric(.data$duration),
-    # diff_hours = ifelse(is.na(duration_numeric), 0, duration_numeric / (3600 * 1000)),
+    # diff_hours = as.numeric(difftime(.data$end, .data$start, units = "hours")),
+    duration_numeric = as.numeric(.data$duration),
+    diff_hours = ifelse(is.na(duration_numeric), 0, duration_numeric / (3600 * 1000)),
     `Team member` = stringr::str_remove(.data$user_username, "(?<=[A-Z])[a-z]+")
   ) |>
   dplyr::select(.data$id, .data$task_id, .data$task_name, .data$description, .data$user_username, .data$`Team member`, .data$start, .data$end, .data$diff_hours) |>
