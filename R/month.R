@@ -36,26 +36,39 @@ members_id <- unique(teams_ds$members_user_id) |>
 ### get time entries ----
 ### now
 now_posix <- lubridate::now(tzone = time_local)
+### Determine if it's the first day of the month
+is_first_day <- lubridate::day(now_posix) == 1
 
-### start of month
-start_posix <- lubridate::floor_date(now_posix, "month")
+### Adjust start and end dates based on the day check
+if (is_first_day) {
+  ### If it's the first day, adjust start to the beginning of the previous month
+  start_posix <- lubridate::floor_date(now_posix - months(1), "month")
+  ### Adjust end to the end of the previous month
+  end_posix <- lubridate::ceiling_date(now_posix - days(1), "month") - seconds(1)
+} else {
+  ### Regular start of current month
+  start_posix <- lubridate::floor_date(now_posix, "month")
+  ### Current time as end
+  end_posix <- now_posix
+}
 
-### get unix time
-to_posix <- \(x){
+### Convert to unix time in milliseconds
+to_posix <- \(x) {
   rs <- as.POSIXct(x) |>
     as.numeric() |>
     ceiling()
-
-    format(rs * miliseconds, scientific = FALSE)
+  format(rs * miliseconds, scientific = FALSE)
 }
 
-now_posix <- to_posix(now_posix)
 start_posix <- to_posix(start_posix)
+end_posix <- to_posix(end_posix)
 
+### Fetch time entries with adjusted dates
 time <- httr::GET(
-  glue::glue("https://api.clickup.com/api/v2/team/{team_id}/time_entries?start_date={start_posix}&end_date={now_posix}&assignee={members_id}"),
+  glue::glue("https://api.clickup.com/api/v2/team/{team_id}/time_entries?start_date={start_posix}&end_date={end_posix}&assignee={members_id}"),
   httr::add_headers(Authorization = auth_clickup)
 )
+
 
 time_json <- httr::content(time, "parsed")
 
