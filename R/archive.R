@@ -15,54 +15,40 @@ writeLines(auth_google, file_con)
 close(file_con)
 googlesheets4::gs4_auth(path = name_google)
 
-### Determine if current day is the first day of the month
-current_date <- lubridate::now(tzone = time_local)
-is_first_day <- lubridate::day(current_date) == 1
-
-### Adjust period to include last day of previous month if it's the first day
-if (is_first_day) {
-  start_period <- lubridate::floor_date(current_date - months(1), "month")
-  end_period <- current_date - days(1)
-} else {
-  start_period <- lubridate::floor_date(current_date, "month")
-  end_period <- current_date
-}
-
-### Get archive with adjusted period
-month_archive <- googlesheets4::read_sheet(link, sheet_tm, col_types = "cccccccccTTdcc") %>%
-  dplyr::filter(.data$Start >= start_period & .data$End <= end_period) %>%
-  dplyr::select(.data$`Team member`, .data$Start, .data$End, .data$Hours) %>%
+### get archive ----
+month_archive <- googlesheets4::read_sheet(link, sheet_tm, col_types = "cccccccccTTdcc") |>
+  dplyr::select(.data$`Team member`, .data$Start, .data$End, .data$Hours) |>
   dplyr::mutate(
     month_arr = as.numeric(format(.data$Start, "%m")),
     year_arr = as.numeric(format(.data$Start, "%Y")),
     Period = format(.data$Start, "%m.%Y")
-  ) %>%
+  ) |>
   dplyr::group_by(
     .data$`Team member`,
     .data$month_arr,
     .data$year_arr,
     .data$Period
-  ) %>%
+  ) |>
   dplyr::summarise(
     `Sum hours` = sum(.data$Hours),
     `Start Period` = min(.data$Start),
     `End Period` = max(.data$End)
-  ) %>%
-  dplyr::ungroup() %>%
-  dplyr::mutate(`Sum hours` = round(`Sum hours`, 2)) %>%
-  dplyr::arrange(.data$`Team member`, .data$year_arr, .data$month_arr) %>%
-  dplyr::select(-c(.data$month_arr, .data$year_arr)) %>%
+  ) |>
+  dplyr::ungroup() |>
+  dplyr::mutate(`Sum hours` = round(`Sum hours`, 2)) |>
+  dplyr::arrange(.data$`Team member`, .data$year_arr, .data$month_arr) |>
+  dplyr::select(-c(.data$month_arr, .data$year_arr)) |>
   dplyr::mutate(
     dt_load = as.character(lubridate::now(tzone = time_local)),
     Project = team_name
-  ) %>%
-  dplyr::relocate(Project, .before = `Team member`) %>%
+  ) |>
+  dplyr::relocate(Project, .before = `Team member`) |>
   dplyr::relocate(`Sum hours`, .after = `End Period`)
 
 cache_archive <- googlesheets4::read_sheet(link, sheet_archive, col_types = "cccTTdc")
 
-archive <- cache_archive %>%
-  dplyr::rows_upsert(month_archive, by = c("Team member", "Period")) %>%
+archive <- cache_archive |>
+  dplyr::rows_upsert(month_archive, by = c("Team member", "Period")) |>
   dplyr::arrange(.data$`Team member`, .data$`Start Period`)
 
 ### write to table ----
