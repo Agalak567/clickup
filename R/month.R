@@ -1,4 +1,5 @@
 ### const ----
+library(lubridate)  # Ensure lubridate is loaded
 credentals <- jsonlite::fromJSON(Sys.getenv("credentals"))
 auth_clickup <- credentals[["CLICKUP"]]
 auth_google <- Sys.getenv("GKEY")
