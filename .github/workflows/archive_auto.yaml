@@ -2,7 +2,7 @@
 # https://community.rstudio.com/new-topic?category=Package%20development&tags=github-actions
 on:
   schedule:
-      - cron: "0 4 * * *"
+      - cron: "0 5 * * *"
 
 name: archive_auto
 
