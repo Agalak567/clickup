@@ -25,6 +25,7 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       GKEY: ${{ secrets.GOOGLE_KEY }}
       credentals: ${{ secrets.CREDENTALS }}
+      NEW_CLICKUP_KEY: ${{ secrets.NEW_CLICKUP_KEY }}
 
     steps:
       - uses: actions/checkout@v2
