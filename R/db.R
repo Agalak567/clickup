@@ -23,6 +23,13 @@ teams <- httr::GET(
   httr::add_headers(Authorization = auth_clickup)
 )
 
+# TEMPORARY DEBUG PRINT
+print(teams_json)
+
+teams_ds <- tibble::tibble(result = teams_json[["teams"]]) %>%
+  tidyr::unnest_wider(col = .data[["result"]])
+# END OF TEMPORARY DEBUG PRINT
+
 teams_json <- httr::content(teams, "parsed")
 
 teams_ds <- tibble::tibble(result = teams_json[["teams"]]) |>
