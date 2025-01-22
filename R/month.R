@@ -1,7 +1,8 @@
 ### const ----
 library(lubridate)  # Ensure lubridate is loaded
 credentals <- jsonlite::fromJSON(Sys.getenv("credentals"))
-auth_clickup <- credentals[["CLICKUP"]]
+# auth_clickup <- credentals[["CLICKUP"]] - This is Vlad's API key, and it has lower access levels.
+auth_clickup <- Sys.getenv("NEW_CLICKUP_KEY") # This is Kira's API key, and it has highier access levels, thus we switched to using this key
 auth_google <- Sys.getenv("GKEY")
 name_google <- credentals[["GNAME"]]
 team_id <- credentals[["TID"]]
