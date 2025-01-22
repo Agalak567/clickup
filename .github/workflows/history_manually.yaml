@@ -28,6 +28,7 @@ jobs:
       GKEY: ${{ secrets.GOOGLE_KEY }}
       credentals: ${{ secrets.CREDENTALS }}
       STDATE: ${{ github.event.inputs.stdate }}
+      NEW_CLICKUP_KEY: ${{ secrets.NEW_CLICKUP_KEY }}
 
     steps:
       - uses: actions/checkout@v2
