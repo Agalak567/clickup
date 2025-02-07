@@ -139,7 +139,7 @@ result <- timers |>
 # Ensure unique (ID, id) key by appending a suffix for duplicate rows
 result <- result |>
   dplyr::group_by(ID, id) |>
-  dplyr::mutate(id = ifelse(n() > 1, paste0(id, "-", dplyr::row_number()), id)) |>
+  dplyr::mutate(id = ifelse(dplyr::n() > 1, paste0(id, "-", dplyr::row_number()), id)) |>
   dplyr::ungroup()
 
 ### get cache history ----
