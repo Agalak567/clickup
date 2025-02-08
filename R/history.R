@@ -136,14 +136,16 @@ result <- timers |>
   ) |>
   dplyr::relocate(.data$id, .after = .data$dt_load)
 
-# Ensure unique (ID, id) key by appending a suffix for duplicate rows
+# Deduplicate rows so that (ID, id) is unique
 result <- result |>
-  dplyr::group_by(ID, id) |>
-  dplyr::mutate(id = ifelse(dplyr::n() > 1, paste0(id, "-", dplyr::row_number()), id)) |>
-  dplyr::ungroup()
+  dplyr::distinct(ID, id, .keep_all = TRUE)
 
 ### get cache history ----
-cache_history <- googlesheets4::read_sheet(link, sheet_hs, col_types = "cccccccccTTdcccTcccc")
+cache_history <- googlesheets4::read_sheet(
+  link,
+  sheet_hs,
+  col_types = "cccccccccTTdcccTcccc"
+)
 
 update_history <- cache_history |>
   dplyr::rows_upsert(result, by = c("ID", "id")) |>
