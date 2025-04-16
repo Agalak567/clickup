@@ -8,15 +8,12 @@ name: websites_manually
 jobs:
   manually:
     runs-on: ${{ matrix.config.os }}
-
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
-
     strategy:
       fail-fast: false
       matrix:
         config:
           - {os: ubuntu-22.04, r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/jammy/latest"}
-
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       RSPM: ${{ matrix.config.rspm }}
@@ -24,7 +21,6 @@ jobs:
       GKEY: ${{ secrets.GOOGLE_KEY }}
       credentals: ${{ secrets.CREDENTALS }}
       NEW_CLICKUP_KEY: ${{ secrets.NEW_CLICKUP_KEY }}
-
     steps:
       - uses: actions/checkout@v2
 
@@ -56,7 +52,7 @@ jobs:
           do
             eval sudo $cmd
           done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "22.04"))')
-          
+
       - name: Reinstall stringi package
         run: |
           echo 'if ("stringi" %in% installed.packages()[, "Package"]) { remove.packages("stringi") }' > reinstall_stringi.R
@@ -66,10 +62,10 @@ jobs:
 
       - name: Install dependencies
         run: |
-          Rscript -e 'remotes::install_deps(dependencies = TRUE)'
+          remotes::install_deps(dependencies = TRUE)
         shell: Rscript {0}
 
       - name: upload websites
         run: |
-          Rscript -e 'source("R/websites.R")'
+          source("R/websites.R")
         shell: Rscript {0}
