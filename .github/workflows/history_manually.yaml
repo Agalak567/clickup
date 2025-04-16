@@ -20,7 +20,6 @@ jobs:
         config:
           - {os: ubuntu-22.04, r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/jammy/latest"}
 
-
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       RSPM: ${{ matrix.config.rspm }}
@@ -51,8 +50,8 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ env.R_LIBS_USER }}
-          key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
-          restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
+          key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-ubuntu22.04-${{ hashFiles('.github/depends.Rds') }}
+          restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-ubuntu22.04-
 
       - name: Install system dependencies
         if: runner.os == 'Linux'
@@ -61,6 +60,13 @@ jobs:
           do
             eval sudo $cmd
           done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "22.04"))')
+
+      - name: Reinstall stringi package
+        run: |
+          echo 'if ("stringi" %in% installed.packages()[, "Package"]) { remove.packages("stringi") }' > reinstall_stringi.R
+          echo 'install.packages("stringi", repos = Sys.getenv("RSPM"))' >> reinstall_stringi.R
+          Rscript reinstall_stringi.R
+        shell: bash
 
       - name: Install dependencies
         run: |
