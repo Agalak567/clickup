@@ -59,8 +59,8 @@ jobs:
           
       - name: Reinstall stringi package
         run: |
-          Rscript -e "if ('stringi' %in% installed.packages()[, 'Package']) { remove.packages('stringi') }"
-          Rscript -e "install.packages('stringi', repos = Sys.getenv('RSPM'))"
+          Rscript -e 'if ("stringi" %in% installed.packages()[, "Package"]) { remove.packages("stringi") }'
+          Rscript -e 'install.packages("stringi", repos = Sys.getenv("RSPM"))'
         shell: Rscript {0}
 
       - name: Install dependencies
